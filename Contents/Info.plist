@@ -20,6 +20,8 @@
 	<string>MacOSX</string>
 	<key>PlexFrameworkVersion</key>
 	<string>1</string>
+	<key>PlexMediaContainer</key>
+	<string>FLV</string>
 	<key>PlexPluginAuthor</key>
 	<string>Dave Addey and James Clarke</string>
 	<key>PlexPluginLanguage</key>
@@ -34,5 +36,7 @@
 	</array>
 	<key>PlexPluginType</key>
 	<string>Framework</string>
+	<key>PlexVideoCodec</key>
+	<string>H.264</string>
 </dict>
 </plist>
