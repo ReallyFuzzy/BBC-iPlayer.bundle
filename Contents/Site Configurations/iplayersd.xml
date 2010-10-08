@@ -47,7 +47,7 @@
 			<action>
 				<!-- find the embedded media player instance, and store it in a handy reference variable -->
 				<!-- for on-demand video, it will be called bip-play-emp; for on-demand radio, it will be called semp-wrapper; for live video / audio it doesn't matter, because playback starts anyway -->
-				<run script="plexEMP = embeddedMedia.playerInstances['bip-play-emp']; if (!plexEMP) { plexEMP = embeddedMedia.playerInstances['semp-wrapper']; }" />
+				<run script="plexEMP = embeddedMedia.playerInstances['emp']; if (!plexEMP) { plexEMP = embeddedMedia.playerInstances['semp-wrapper']; }" />
 				<!-- register a callback event for when playback progress changes, which will update the global position and duration variables, as used by the seekbar -->
 				<run script="plexEMP.register('onPlaybackProgress'); plexEMP.onPlaybackProgress = function (p) { position = p.progress; duration = p.duration; };" />
 				<!-- register a callback event for playback completion, but watch out for the completion of short idents at the start of programs -->

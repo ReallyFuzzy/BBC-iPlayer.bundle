@@ -10,7 +10,7 @@ BBC_URL                       = "http://www.bbc.co.uk"
 BBC_FEED_URL                  = "http://feeds.bbc.co.uk"
 BBC_SD_PLAYER_URL             = "%s/iplayer/episode/%%s" % BBC_URL
 BBC_HD_PLAYER_URL             = "%s/iplayer/episode/%%s/hd" % BBC_URL
-BBC_LIVE_URL                  = "%s/iplayer/playlive/%%s" % BBC_URL
+BBC_LIVE_URL                  = "%s/iplayer/tv/%%s/watchlive" % BBC_URL
 BBC_SD_THUMB_URL              = "http://node2.bbcimg.co.uk/iplayer/images/episode/%s_640_360.jpg"
 BBC_HD_THUMB_URL              = "http://node2.bbcimg.co.uk/iplayer/images/episode/%s_832_468.jpg"
 BBC_RADIO_CHANNEL_THUMB_URL   = "%s/iplayer/img/radio/%%s.gif" % BBC_URL
@@ -21,10 +21,10 @@ BBC_TV_CHANNEL_THUMB_URL      = "%s/iplayer/img/tv/%%s.jpg" % BBC_URL
 def Start():
 
   HTTP.SetCacheTime(3600)
-  Plugin.AddPrefixHandler(IPLAYER_PREFIX, MainMenu, "BBC iPlayer", "icon-default.png", "art-wall.png")
+  Plugin.AddPrefixHandler(IPLAYER_PREFIX, MainMenu, "BBC iPlayer", "icon-default.png", "art-wall.jpg")
   Plugin.AddViewGroup("Menu", viewMode = "List", mediaType = "items")
   Plugin.AddViewGroup("Info", viewMode = "InfoList", mediaType = "items")
-  MediaContainer.art = R("art-default.png")
+  MediaContainer.art = R("art-default.jpg")
   MediaContainer.viewGroup = "Menu"
   MediaContainer.title1 = "BBC iPlayer"
   DirectoryItem.thumb = R("icon-default.png")
