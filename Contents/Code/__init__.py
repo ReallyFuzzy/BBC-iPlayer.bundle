@@ -77,7 +77,7 @@ def AddRadioStations(sender, query = None):
 
   dir = MediaContainer(title1 = sender.title2, title2 = sender.itemTitle, viewGroup = "Info")
 
-  dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Radio 1", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_radio_one"), type = "radio", rss_channel_id = "bbc_radio_one", json_channel_id = "radio1", live_id = "bbc_radio_one"))
+  dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Radio 1", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_radio_one"), type = "radio", rss_channel_id = "bbc_radio_one", json_channel_id = "radio1", json_region_id = "england", live_id = "bbc_radio_one"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC 1Xtra", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_1xtra"), type = "radio", rss_channel_id = "bbc_1xtra", json_channel_id = "1xtra", live_id = "bbc_1xtra"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Radio 2", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_radio_two"), type = "radio", rss_channel_id = "bbc_radio_two", json_channel_id = "radio2", live_id = "bbc_radio_two"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Radio 3", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_radio_three"), type = "radio", rss_channel_id = "bbc_radio_three", json_channel_id = "radio3", live_id = "bbc_radio_three"))
