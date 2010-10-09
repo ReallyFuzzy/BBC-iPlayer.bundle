@@ -10,7 +10,8 @@ BBC_URL                       = "http://www.bbc.co.uk"
 BBC_FEED_URL                  = "http://feeds.bbc.co.uk"
 BBC_SD_PLAYER_URL             = "%s/iplayer/episode/%%s" % BBC_URL
 BBC_HD_PLAYER_URL             = "%s/iplayer/episode/%%s/hd" % BBC_URL
-BBC_LIVE_URL                  = "%s/iplayer/tv/%%s/watchlive" % BBC_URL
+BBC_LIVE_TV_URL               = "%s/iplayer/tv/%%s/watchlive" % BBC_URL
+BBC_LIVE_RADIO_URL            = "%s/iplayer/radio/%%s/listenlive" % BBC_URL
 BBC_SD_THUMB_URL              = "http://node2.bbcimg.co.uk/iplayer/images/episode/%s_640_360.jpg"
 BBC_HD_THUMB_URL              = "http://node2.bbcimg.co.uk/iplayer/images/episode/%s_832_468.jpg"
 BBC_RADIO_CHANNEL_THUMB_URL   = "%s/iplayer/img/radio/%%s.gif" % BBC_URL
@@ -64,7 +65,7 @@ def AddTVChannels(sender, query = None):
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "CBBC", subtitle = sender.itemTitle, summary = L("summary-cbbc"), thumb = BBC_TV_CHANNEL_THUMB_URL % "cbbc"), type = "tv", rss_channel_id = "cbbc", json_channel_id = "cbbc", live_id = "cbbc"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "CBeebies", subtitle = sender.itemTitle, summary = L("summary-cbeebies"), thumb = BBC_TV_CHANNEL_THUMB_URL % "cbeebies_1"), type = "tv", rss_channel_id = "cbeebies", thumb_id = "cbeebies_1", json_channel_id = "cbeebies", live_id = "cbeebies"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC News Channel", subtitle = sender.itemTitle, summary = L("summary-bbc_news24"), thumb = BBC_TV_CHANNEL_THUMB_URL % "bbc_news24"), type = "tv", rss_channel_id = "bbc_news24", json_channel_id = "bbcnews", live_id = "bbc_news24"))
-  dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Parliament", subtitle = sender.itemTitle, summary = L("summary-bbc_parliament"), thumb = BBC_TV_CHANNEL_THUMB_URL % "bbc_parliament"), type = "tv", rss_channel_id = "bbc_parliament", json_channel_id = "parliament", live_id = "bbc_parliament"))
+  dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Parliament", subtitle = sender.itemTitle, summary = L("summary-bbc_parliament"), thumb = BBC_TV_CHANNEL_THUMB_URL % "bbc_parliament_1"), type = "tv", rss_channel_id = "bbc_parliament", json_channel_id = "parliament", live_id = "bbc_parliament"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC HD", subtitle = sender.itemTitle, thumb = BBC_TV_CHANNEL_THUMB_URL % "bbc_hd_1"), type = "tv", rss_channel_id = "bbc_hd", thumb_id = "bbc_hd_1", json_channel_id = "bbchd", thumb_url = BBC_HD_THUMB_URL, player_url = BBC_HD_PLAYER_URL))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Alba", subtitle = sender.itemTitle, thumb = BBC_TV_CHANNEL_THUMB_URL % "bbc_alba"), type = "tv", rss_channel_id = "bbc_alba", json_channel_id = "bbcalba", live_id = "bbc_alba"))
 
@@ -223,7 +224,10 @@ def ChannelContainer(sender, query = None, type = "None", rss_channel_id = None,
       thumb = BBC_RADIO_CHANNEL_THUMB_URL % thumb_id
 
   if live_id != None:
-    dir.Append(WebVideoItem(url = BBC_LIVE_URL % live_id, title = "On Now", subtitle = sender.itemTitle, thumb = thumb, duration = 0))
+    if type == "tv":
+      dir.Append(WebVideoItem(url = BBC_LIVE_TV_URL % live_id, title = "On Now", subtitle = sender.itemTitle, thumb = thumb, duration = 0))
+    else:
+      dir.Append(WebVideoItem(url = BBC_LIVE_RADIO_URL % live_id, title = "On Now", subtitle = sender.itemTitle, thumb = thumb, duration = 0))
 
   if rss_channel_id != None:
     dir.Append(Function(DirectoryItem(RSSListContainer, title = "Highlights", subtitle = sender.itemTitle, thumb = thumb), url = BBC_FEED_URL + "/iplayer/highlights/" + rss_channel_id, subtitle = sender.itemTitle, thumb_url = thumb_url, player_url = player_url))
