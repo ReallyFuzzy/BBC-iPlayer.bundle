@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site site="http://.*\.bbc\.co\.uk/iplayer/episode/"
-      plugin=".*player.swf"
-      initialState="buffering"
-      version="4.0">
-      
-    <setCookie domain=".bbc.co.uk" path="/" name="BBCPGstat" secure="false" value="0%3A-"/>
+	plugin=".*player.swf"
+	initialState="buffering"
+	version="5.0">
 
-	<crop x="0" y="0" width="0" height="-34" />
+	<setCookie domain=".bbc.co.uk" path="/" name="BBCPGstat" secure="false" value="0%3A-"/>
+
+	<crop x="0" y="0" width="0" height="-35" />
 
 	<seekbar type="javascript">
 		<!-- if onPlaybackProgress has been called to set a duration and position, then use these for the current percentage complete -->
@@ -17,7 +17,7 @@
 		<!-- check for main feature completion using the hasCompleted variable, which is set in the onMediaCompleted event below when the current duration is longer than 60 seconds -->
 		<end condition="hasCompleted == true" />
 	</seekbar>
-	
+
 	<state name="buffering">
 		<event>
 			<condition>
@@ -29,7 +29,7 @@
 			</action>
 		</event>
 	</state>
-	
+
 	<state name="loading">
 		<event>
 			<condition>
@@ -40,8 +40,8 @@
 			<action>
 				<pause time="1000" />
 				<!-- find the embedded media player instance, and store it in a handy reference variable -->
-				<!-- for on-demand video, it will be called bip-play-emp; for on-demand radio, it will be called semp-wrapper; for live video / audio it doesn't matter, because playback starts anyway -->
-				<run script="plexEMP = embeddedMedia.playerInstances['emp']; if (!plexEMP) { plexEMP = embeddedMedia.playerInstances['semp-wrapper']; }" />
+				<!-- for on-demand video and radio, it will be called emp -->
+				<run script="plexEMP = embeddedMedia.playerInstances['emp'];" />
 				<!-- register a callback event for when playback progress changes, which will update the global position and duration variables, as used by the seekbar -->
 				<run script="plexEMP.register('onPlaybackProgress'); plexEMP.onPlaybackProgress = function (p) { position = p.progress; duration = p.duration; };" />
 				<!-- register a callback event for playback completion, but watch out for the completion of short idents at the start of programs -->
@@ -66,7 +66,7 @@
 			</action>
 		</event>
 	</state>
-	
+
 	<state name="paused">
 		<event>
 			<condition>
