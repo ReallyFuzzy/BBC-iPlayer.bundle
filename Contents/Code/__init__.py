@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 from PMS import *
 import math
-    
+import re
+
 ####################################################################################################
 
 IPLAYER_PREFIX                = "/video/iplayer"
@@ -16,6 +17,12 @@ BBC_SD_THUMB_URL              = "http://node2.bbcimg.co.uk/iplayer/images/episod
 BBC_HD_THUMB_URL              = "http://node2.bbcimg.co.uk/iplayer/images/episode/%s_832_468.jpg"
 BBC_RADIO_CHANNEL_THUMB_URL   = "%s/iplayer/img/radio/%%s.gif" % BBC_URL
 BBC_TV_CHANNEL_THUMB_URL      = "%s/iplayer/img/tv/%%s.jpg" % BBC_URL
+
+BBC_SEARCH_URL                = '%s/iplayer/search?q=%%s&page=%%s' % BBC_URL
+BBC_SEARCH_TV_URL             = BBC_SEARCH_URL + '&filter=tv'
+BBC_SEARCH_RADIO_URL          = BBC_SEARCH_URL + '&filter=radio'
+
+PLUGIN_ICON_SEARCH            = 'icon-search.png'
 
 ####################################################################################################
 
@@ -50,6 +57,8 @@ def MainMenu():
 
   dir.Append(Function(DirectoryItem(AddAToZ, title = "A to Z")))
 
+  dir.Append(Function(InputDirectoryItem(Search, title='Search', prompt='Search for Programmes', thumb=R(PLUGIN_ICON_SEARCH)), search_url = BBC_SEARCH_URL))
+
   return dir
 
 ####################################################################################################
@@ -68,6 +77,7 @@ def AddTVChannels(sender, query = None):
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Parliament", subtitle = sender.itemTitle, summary = L("summary-bbc_parliament"), thumb = BBC_TV_CHANNEL_THUMB_URL % "bbc_parliament_1"), type = "tv", rss_channel_id = "bbc_parliament", thumb_id = "bbc_parliament_1", json_channel_id = "parliament", live_id = "bbc_parliament"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC HD", subtitle = sender.itemTitle, thumb = BBC_TV_CHANNEL_THUMB_URL % "bbc_hd_1"), type = "tv", rss_channel_id = "bbc_hd", thumb_id = "bbc_hd_1", json_channel_id = "bbchd", thumb_url = BBC_HD_THUMB_URL, player_url = BBC_HD_PLAYER_URL))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Alba", subtitle = sender.itemTitle, thumb = BBC_TV_CHANNEL_THUMB_URL % "bbc_alba"), type = "tv", rss_channel_id = "bbc_alba", json_channel_id = "bbcalba", live_id = "bbc_alba"))
+  dir.Append(Function(InputDirectoryItem(Search, title='Search', prompt='Search for TV Programmes', thumb=R(PLUGIN_ICON_SEARCH)), search_url = BBC_SEARCH_TV_URL))
 
   return dir
 
@@ -89,6 +99,7 @@ def AddRadioStations(sender, query = None):
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Radio 7", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_7"), type = "radio", rss_channel_id = "bbc_7", json_channel_id = "bbc7", live_id = "bbc_7"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Asian Network", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_asian_network"), type = "radio", rss_channel_id = "bbc_asian_network", json_channel_id = "asiannetwork", live_id = "bbc_asian_network"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC World Service", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_world_service"), type = "radio", rss_channel_id = "bbc_world_service", json_channel_id = "worldservice", live_id = "bbc_world_service"))
+  dir.Append(Function(InputDirectoryItem(Search, title='Search', prompt='Search for Radio Programmes', thumb=R(PLUGIN_ICON_SEARCH)), search_url = BBC_SEARCH_RADIO_URL))
 
   return dir
 
@@ -154,6 +165,47 @@ def AddAToZ(sender, query = None):
 
   return dir
 
+####################################################################################################
+
+def Search(sender, query, search_url = BBC_SEARCH_URL, page_num = 1):
+
+  dir = None
+  
+  searchResults = HTTP.Request(search_url % (String.Quote(query),page_num))
+  
+  # Extract out JS object which contains program info.
+  match = re.search('iplayer\\.models\\.episodeRegistry\\.addData\\((.*?)\\);',searchResults, re.IGNORECASE | re.DOTALL)
+  
+  if match:
+    jsonObj = JSON.ObjectFromString(match.group(1));
+    if jsonObj:
+    
+      eps = jsonObj.values()
+  
+      # Try to extract out the order of the show out of the html as the JSON object is a dictionary keyed by PID which means 
+      # the results order can't be guaranteed by just iterating through it.    
+      epOrder = []
+      for  match in re.finditer('class="cta-add-to-favourites" href="pid-(.*?)"',searchResults):
+        epOrder.append(match.group(1))
+ 
+      eps.sort(key=lambda ep: (ep['id'] in epOrder and (epOrder.index(ep['id']) + 1)) or 1000)
+      
+      dir = JSONSSearchListContainer(sender,eps)
+      dir.noHistory = True
+    
+  if not dir or len(dir) == 0:
+    return MessageContainer(header = sender.itemTitle, message = "No programmes found.")
+  else:
+    if page_num > 1:
+      dir.Insert(0,Function(DirectoryItem(Search, title='Previous...', thumb=R(PLUGIN_ICON_SEARCH)), query = query, search_url = search_url, page_num = page_num - 1))
+  
+    # See if we need a next button.
+    if (re.search('title="Next page"', searchResults)):
+      dir.Append(Function(DirectoryItem(Search, title='More...', thumb=R(PLUGIN_ICON_SEARCH)), query = query, search_url = search_url, page_num = page_num + 1))
+  
+
+  return dir; 
+  
 ####################################################################################################
 
 def WeekdayName(inDate):
@@ -589,6 +641,32 @@ def JSONScheduleListContainer(sender, query = None, url = None, subtitle = None,
         dir.Append(Function(DirectoryItem(NotAvailableOniPlayerContainer, title = "%s %s" % (start, title), subtitle = foundSubtitle, summary = short_synopsis + "\n\nNot currently available on iPlayer.", thumb = thumb_url % pid), header = "%s - %s" % (title, foundSubtitle), message = "This programme is not currently available on iPlayer."))
       else:
         dir.Append(Function(DirectoryItem(NotAvailableOniPlayerContainer, title = "%s %s" % (start, title), subtitle = subtitle, summary = short_synopsis + "\n\nNot currently available on iPlayer.", thumb = thumb_url % pid), header = title, message = "This programme is not currently available on iPlayer."))
+  
+  return dir
+
+####################################################################################################
+
+def JSONSSearchListContainer(sender, jsonObj = None, thumb_url = BBC_SD_THUMB_URL):
+
+  # this function generates the schedule lists for today / yesterday etc. from a JSON feed
+  if jsonObj is None: return
+  
+  dir = MediaContainer(title1 = sender.title2, title2 = sender.itemTitle, viewGroup = "Info")
+
+  for progInfo in jsonObj:
+
+    url = BBC_URL + progInfo['my_url']
+    duration = int(progInfo['duration']) * 1000
+    title = progInfo['complete_title']
+    foundSubtitle = progInfo['masterbrand_title']
+    broadcast_date = BBCDateToUTCPythonDate(progInfo['original_broadcast_datetime']).strftime('%a, %d. %b %Y %I:%M%p')
+    pid = progInfo['id']
+    short_synopsis = progInfo['short_synopsis'] + "\n\nBroadcast On: " +  broadcast_date + "\nDuration: " + DurationAsString(duration)
+    
+    if progInfo.has_key("availability") and progInfo["availability"] == 'CURRENT':
+      dir.Append(WebVideoItem(url = url, title = title, subtitle = foundSubtitle, summary = short_synopsis, duration = duration, thumb = thumb_url % pid))
+    else:
+      dir.Append(Function(DirectoryItem(NotAvailableOniPlayerContainer, title = title, subtitle = foundSubtitle, summary = short_synopsis + "\n\nNot currently available on iPlayer.", thumb = thumb_url % pid), header = "%s - %s" % (title, foundSubtitle), message = "This programme is not currently available on iPlayer."))
   
   return dir
 
