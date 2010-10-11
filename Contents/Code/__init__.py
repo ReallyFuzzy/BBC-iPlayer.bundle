@@ -57,7 +57,8 @@ def MainMenu():
 
   dir.Append(Function(DirectoryItem(AddAToZ, title = "A to Z")))
 
-  dir.Append(Function(InputDirectoryItem(Search, title='Search', prompt='Search for Programmes', thumb=R(PLUGIN_ICON_SEARCH)), search_url = BBC_SEARCH_URL))
+  dir.Append(Function(InputDirectoryItem(Search, title='Search TV', prompt='Search for TV Programmes', thumb=R(PLUGIN_ICON_SEARCH)), search_url = BBC_SEARCH_TV_URL))
+  dir.Append(Function(InputDirectoryItem(Search, title='Search Radio', prompt='Search for Radio Programmes', thumb=R(PLUGIN_ICON_SEARCH)), search_url = BBC_SEARCH_RADIO_URL))
 
   return dir
 
@@ -77,7 +78,6 @@ def AddTVChannels(sender, query = None):
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Parliament", subtitle = sender.itemTitle, summary = L("summary-bbc_parliament"), thumb = BBC_TV_CHANNEL_THUMB_URL % "bbc_parliament_1"), type = "tv", rss_channel_id = "bbc_parliament", thumb_id = "bbc_parliament_1", json_channel_id = "parliament", live_id = "bbc_parliament"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC HD", subtitle = sender.itemTitle, thumb = BBC_TV_CHANNEL_THUMB_URL % "bbc_hd_1"), type = "tv", rss_channel_id = "bbc_hd", thumb_id = "bbc_hd_1", json_channel_id = "bbchd", thumb_url = BBC_HD_THUMB_URL, player_url = BBC_HD_PLAYER_URL))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Alba", subtitle = sender.itemTitle, thumb = BBC_TV_CHANNEL_THUMB_URL % "bbc_alba"), type = "tv", rss_channel_id = "bbc_alba", json_channel_id = "bbcalba", live_id = "bbc_alba"))
-  dir.Append(Function(InputDirectoryItem(Search, title='Search', prompt='Search for TV Programmes', thumb=R(PLUGIN_ICON_SEARCH)), search_url = BBC_SEARCH_TV_URL))
 
   return dir
 
@@ -99,7 +99,6 @@ def AddRadioStations(sender, query = None):
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Radio 7", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_7"), type = "radio", rss_channel_id = "bbc_7", json_channel_id = "bbc7", live_id = "bbc_7"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Asian Network", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_asian_network"), type = "radio", rss_channel_id = "bbc_asian_network", json_channel_id = "asiannetwork", live_id = "bbc_asian_network"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC World Service", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_world_service"), type = "radio", rss_channel_id = "bbc_world_service", json_channel_id = "worldservice", live_id = "bbc_world_service"))
-  dir.Append(Function(InputDirectoryItem(Search, title='Search', prompt='Search for Radio Programmes', thumb=R(PLUGIN_ICON_SEARCH)), search_url = BBC_SEARCH_RADIO_URL))
 
   return dir
 
