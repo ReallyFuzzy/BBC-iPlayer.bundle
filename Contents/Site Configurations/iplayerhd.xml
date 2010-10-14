@@ -33,12 +33,10 @@
 	<state name="loading">
 		<event>
 			<condition>
-				<and>
-					<color x="17" y="-21" rgb="ffffff" />
-				</and>
+				<color x="17" y="-21" rgb="ffffff" />
 			</condition>
 			<action>
-				<pause time="1000" />
+				<pause time="2500" />
 				<!-- find the embedded media player instance, and store it in a handy reference variable -->
 				<!-- for on-demand video, it will be called emp -->
 				<run script="plexEMP = embeddedMedia.playerInstances['emp'];" />
