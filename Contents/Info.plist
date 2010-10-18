@@ -24,6 +24,8 @@
 	<string>FLV</string>
 	<key>PlexPluginAuthor</key>
 	<string>Dave Addey and James Clarke</string>
+	<key>PlexRegions</key>
+	<string>GB</string>
 	<key>PlexPluginLanguage</key>
 	<string>Python25</string>
 	<key>PlexPluginMode</key>
