@@ -24,7 +24,7 @@
 	<string>FLV</string>
 	<key>PlexPluginAuthor</key>
 	<string>Dave Addey and James Clarke</string>
-	<key>PlexRegions</key>
+	<key>PlexPluginRegions</key>
 	<array>
   	<string>GB</string>
 	</array>
