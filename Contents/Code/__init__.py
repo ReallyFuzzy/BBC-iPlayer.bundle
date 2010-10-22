@@ -173,7 +173,7 @@ def Search(sender, query, search_url = BBC_SEARCH_URL, page_num = 1):
   searchResults = HTTP.Request(search_url % (String.Quote(query),page_num))
   
   # Extract out JS object which contains program info.
-  match = re.search('iplayer\\.models\\.episodeRegistry\\.addData\\((.*?)\\);',searchResults, re.IGNORECASE | re.DOTALL)
+  match = re.search('episodeRegistry\\.addData\\((.*?)\\);',searchResults, re.IGNORECASE | re.DOTALL)
   
   if match:
     jsonObj = JSON.ObjectFromString(match.group(1));
