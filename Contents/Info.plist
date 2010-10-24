@@ -20,31 +20,15 @@
 	<string>MacOSX</string>
 	<key>PlexFrameworkVersion</key>
 	<string>1</string>
-	<key>PlexMediaContainer</key>
-	<array>
-		<string>FLV</string>
-	</array>
-	<key>PlexPluginAuthor</key>
-	<string>Dave Addey and James Clarke</string>
-	<key>PlexPluginLanguage</key>
-	<string>Python25</string>
 	<key>PlexPluginMode</key>
 	<string>AlwaysOn</string>
-	<key>PlexPluginName</key>
-	<string>BBC iPlayer</string>
-	<key>PlexPluginPrefixes</key>
+	<key>PlexMediaContainer</key>
 	<array>
-		<string>/video/BBC iPlayer</string>
+		<string>Flash</string>
 	</array>
 	<key>PlexPluginRegions</key>
 	<array>
 		<string>GB</string>
-	</array>
-	<key>PlexPluginType</key>
-	<string>Framework</string>
-	<key>PlexVideoCodec</key>
-	<array>
-		<string>H.264</string>
 	</array>
 </dict>
 </plist>
