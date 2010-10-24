@@ -21,13 +21,11 @@
 	<key>PlexFrameworkVersion</key>
 	<string>1</string>
 	<key>PlexMediaContainer</key>
-	<string>FLV</string>
+	<array>
+		<string>FLV</string>
+	</array>
 	<key>PlexPluginAuthor</key>
 	<string>Dave Addey and James Clarke</string>
-	<key>PlexPluginRegions</key>
-	<array>
-  	<string>GB</string>
-	</array>
 	<key>PlexPluginLanguage</key>
 	<string>Python25</string>
 	<key>PlexPluginMode</key>
@@ -38,9 +36,15 @@
 	<array>
 		<string>/video/BBC iPlayer</string>
 	</array>
+	<key>PlexPluginRegions</key>
+	<array>
+		<string>GB</string>
+	</array>
 	<key>PlexPluginType</key>
 	<string>Framework</string>
 	<key>PlexVideoCodec</key>
-	<string>H.264</string>
+	<array>
+		<string>H.264</string>
+	</array>
 </dict>
 </plist>
