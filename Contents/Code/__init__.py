@@ -1,11 +1,10 @@
 from datetime import datetime, timedelta
-from PMS import *
-import math
-import re
+import math, re
 
 ####################################################################################################
 
 IPLAYER_PREFIX                = "/video/iplayer"
+TITLE                         = "BBC iPlayer"
 
 BBC_URL                       = "http://www.bbc.co.uk"
 BBC_FEED_URL                  = "http://feeds.bbc.co.uk"
@@ -18,24 +17,28 @@ BBC_HD_THUMB_URL              = "http://node2.bbcimg.co.uk/iplayer/images/episod
 BBC_RADIO_CHANNEL_THUMB_URL   = "%s/iplayer/img/radio/%%s.gif" % BBC_URL
 BBC_TV_CHANNEL_THUMB_URL      = "%s/iplayer/img/tv/%%s.jpg" % BBC_URL
 
-BBC_SEARCH_URL                = '%s/iplayer/search?q=%%s&page=%%s' % BBC_URL
-BBC_SEARCH_TV_URL             = BBC_SEARCH_URL + '&filter=tv'
-BBC_SEARCH_RADIO_URL          = BBC_SEARCH_URL + '&filter=radio'
+BBC_SEARCH_URL                = "%s/iplayer/search?q=%%s&page=%%s" % BBC_URL
+BBC_SEARCH_TV_URL             = BBC_SEARCH_URL + "&filter=tv"
+BBC_SEARCH_RADIO_URL          = BBC_SEARCH_URL + "&filter=radio"
 
-PLUGIN_ICON_SEARCH            = 'icon-search.png'
+ART_DEFAULT                   = "art-default.jpg"
+ART_WALL                      = "art-wall.jpg"
+ICON_DEFAULT                  = "icon-default.png"
+ICON_SEARCH                   = "icon-search.png"
 
 ####################################################################################################
 
 def Start():
 
-  HTTP.SetCacheTime(3600)
-  Plugin.AddPrefixHandler(IPLAYER_PREFIX, MainMenu, "BBC iPlayer", "icon-default.png", "art-wall.jpg")
+  Plugin.AddPrefixHandler(IPLAYER_PREFIX, MainMenu, TITLE, ICON_DEFAULT, ART_WALL)
   Plugin.AddViewGroup("Menu", viewMode = "List", mediaType = "items")
   Plugin.AddViewGroup("Info", viewMode = "InfoList", mediaType = "items")
-  MediaContainer.art = R("art-default.jpg")
+  MediaContainer.art = R(ART_DEFAULT)
   MediaContainer.viewGroup = "Menu"
-  MediaContainer.title1 = "BBC iPlayer"
-  DirectoryItem.thumb = R("icon-default.png")
+  MediaContainer.title1 = TITLE
+  DirectoryItem.thumb = R(ICON_DEFAULT)
+  HTTP.CacheTime = CACHE_1HOUR
+  HTTP.Headers['User-agent'] = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.11) Gecko/20101012 Firefox/3.6.11"
 
 ####################################################################################################
 
@@ -57,8 +60,8 @@ def MainMenu():
 
   dir.Append(Function(DirectoryItem(AddAToZ, title = "A to Z")))
 
-  dir.Append(Function(InputDirectoryItem(Search, title='Search TV', prompt='Search for TV Programmes', thumb=R(PLUGIN_ICON_SEARCH)), search_url = BBC_SEARCH_TV_URL))
-  dir.Append(Function(InputDirectoryItem(Search, title='Search Radio', prompt='Search for Radio Programmes', thumb=R(PLUGIN_ICON_SEARCH)), search_url = BBC_SEARCH_RADIO_URL))
+  dir.Append(Function(InputDirectoryItem(Search, title='Search TV', prompt='Search for TV Programmes', thumb=R(ICON_SEARCH)), search_url = BBC_SEARCH_TV_URL))
+  dir.Append(Function(InputDirectoryItem(Search, title='Search Radio', prompt='Search for Radio Programmes', thumb=R(ICON_SEARCH)), search_url = BBC_SEARCH_RADIO_URL))
 
   return dir
 
@@ -170,7 +173,7 @@ def Search(sender, query, search_url = BBC_SEARCH_URL, page_num = 1):
 
   dir = None
   
-  searchResults = HTTP.Request(search_url % (String.Quote(query),page_num))
+  searchResults = HTTP.Request(search_url % (String.Quote(query),page_num)).content
   
   # Extract out JS object which contains program info.
   match = re.search('episodeRegistry\\.addData\\((.*?)\\);',searchResults, re.IGNORECASE | re.DOTALL)
@@ -196,11 +199,11 @@ def Search(sender, query, search_url = BBC_SEARCH_URL, page_num = 1):
     return MessageContainer(header = sender.itemTitle, message = "No programmes found.")
   else:
     if page_num > 1:
-      dir.Insert(0,Function(DirectoryItem(Search, title='Previous...', thumb=R(PLUGIN_ICON_SEARCH)), query = query, search_url = search_url, page_num = page_num - 1))
+      dir.Insert(0,Function(DirectoryItem(Search, title='Previous...', thumb=R(ICON_SEARCH)), query = query, search_url = search_url, page_num = page_num - 1))
   
     # See if we need a next button.
     if (re.search('title="Next page"', searchResults)):
-      dir.Append(Function(DirectoryItem(Search, title='More...', thumb=R(PLUGIN_ICON_SEARCH)), query = query, search_url = search_url, page_num = page_num + 1))
+      dir.Append(Function(DirectoryItem(Search, title='More...', thumb=R(ICON_SEARCH)), query = query, search_url = search_url, page_num = page_num + 1))
   
 
   return dir; 
@@ -510,7 +513,7 @@ def RSSListContainer(sender, query = None, url = None, subtitle = None, sort_lis
     else:
       thisSubtitle = subtitle
 
-    content = XML.ElementFromString(entry["content"][0].value, True)
+    content = HTML.ElementFromString(entry["content"][0].value)
     summary = content.xpath("p")[1].text.strip()
 
     dir.Append(WebVideoItem(url = entry["link"], title = title, subtitle = thisSubtitle, summary = summary, duration = 0, thumb = thumb))
