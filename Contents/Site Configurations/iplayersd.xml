@@ -33,10 +33,29 @@
 	<state name="loading">
 		<event>
 			<condition>
-				<color x="17" y="-21" rgb="ffffff" />
+				<and>
+					<color x="17" y="-21" rgb="ffffff" />
+					<or>
+						<!-- TV -->
+						<and>
+							<color x="302" y="153" rgb="ffffff" />
+							<color x="311" y="153" rgb="ffffff" />
+							<color x="302" y="163" rgb="ffffff" />
+							<color x="311" y="163" rgb="ffffff" />
+							<color x="336" y="168" rgb="ffffff" />
+						</and>
+						<!-- Radio -->
+						<and>
+							<color x="238" y="117" rgb="ffffff" />
+							<color x="247" y="117" rgb="ffffff" />
+							<color x="238" y="127" rgb="ffffff" />
+							<color x="247" y="127" rgb="ffffff" />
+							<color x="272" y="132" rgb="ffffff" />
+						</and>
+					</or>
+				</and>
 			</condition>
 			<action>
-				<pause time="2500" />
 				<!-- find the embedded media player instance, and store it in a handy reference variable -->
 				<!-- for on-demand video and radio, it will be called emp -->
 				<run script="plexEMP = embeddedMedia.playerInstances['emp'];" />
