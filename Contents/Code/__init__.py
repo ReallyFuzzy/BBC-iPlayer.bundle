@@ -109,7 +109,7 @@ def AddRadioStations(sender, query = None):
 
 ####################################################################################################
 
-def AddCategories(sender, query = None, channel_name = None, channel_id = None, thumb = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_THUMB_URL):
+def AddCategories(sender, query = None, channel_name = None, channel_id = None, thumb = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL):
 
   # returns a list of the various categories / genres displayed on the iPlayer web site
 
@@ -659,7 +659,7 @@ def JSONSSearchListContainer(sender, jsonObj = None, thumb_url = BBC_SD_THUMB_UR
 
   for progInfo in jsonObj:
 
-    url = BBC_URL + progInfo['my_url']
+    url = BBC_URL + progInfo['my_url'] + "#" + Prefs['sd_video_quality']
     duration = int(progInfo['duration']) * 1000
     title = progInfo['complete_title']
     foundSubtitle = progInfo['masterbrand_title']
