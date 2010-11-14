@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<site site="http://.*\.bbc\.co\.uk/iplayer"
+<site site="http://.*\.bbc\.co\.uk/iplayer/(tv|radio).*#High"
 	plugin=".*player.swf"
 	initialState="buffering"
 	version="5.0">
 
 	<setCookie domain=".bbc.co.uk" path="/" name="BBCPGstat" secure="false" value="0%3A-"/>
-	<setCookie domain=".bbc.co.uk" path="/iplayer" name="BBCiPlayer" secure="false" value="htl%3Dtrue"/>
+	<setCookie domain=".bbc.co.uk" path="/iplayer" name="BBCiPlayer" secure="false" value="empsize%3Dlarge&amp;htl%3Dtrue"/>
 
 	<crop x="0" y="0" width="0" height="-35" />
 

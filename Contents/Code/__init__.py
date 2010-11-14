@@ -8,9 +8,9 @@ TITLE                         = "BBC iPlayer"
 
 BBC_URL                       = "http://www.bbc.co.uk"
 BBC_FEED_URL                  = "http://feeds.bbc.co.uk"
-BBC_SD_PLAYER_URL             = "%s/iplayer/episode/%%s" % BBC_URL
+BBC_SD_PLAYER_URL             = "%s/iplayer/episode/%%%%s#%%s" % BBC_URL
 BBC_HD_PLAYER_URL             = "%s/iplayer/episode/%%s/hd" % BBC_URL
-BBC_LIVE_TV_URL               = "%s/iplayer/tv/%%s/watchlive" % BBC_URL
+BBC_LIVE_TV_URL               = "%s/iplayer/tv/%%s/watchlive#%%s" % BBC_URL
 BBC_LIVE_RADIO_URL            = "%s/iplayer/radio/%%s/listenlive" % BBC_URL
 BBC_SD_THUMB_URL              = "http://node2.bbcimg.co.uk/iplayer/images/episode/%s_640_360.jpg"
 BBC_HD_THUMB_URL              = "http://node2.bbcimg.co.uk/iplayer/images/episode/%s_832_468.jpg"
@@ -25,6 +25,7 @@ ART_DEFAULT                   = "art-default.jpg"
 ART_WALL                      = "art-wall.jpg"
 ICON_DEFAULT                  = "icon-default.png"
 ICON_SEARCH                   = "icon-search.png"
+ICON_PREFS                    = "icon-prefs.png"
 
 ####################################################################################################
 
@@ -43,9 +44,8 @@ def Start():
 ####################################################################################################
 
 def MainMenu():
-  
   dir = MediaContainer()
-  
+
   dir.Append(Function(DirectoryItem(RSSListContainer, title = "TV Highlights"), url = BBC_FEED_URL + "/iplayer/highlights/tv"))
   dir.Append(Function(DirectoryItem(RSSListContainer, title = "Radio Highlights"), url = BBC_FEED_URL + "/iplayer/highlights/radio"))
 
@@ -60,8 +60,10 @@ def MainMenu():
 
   dir.Append(Function(DirectoryItem(AddAToZ, title = "A to Z")))
 
-  dir.Append(Function(InputDirectoryItem(Search, title='Search TV', prompt='Search for TV Programmes', thumb=R(ICON_SEARCH)), search_url = BBC_SEARCH_TV_URL))
-  dir.Append(Function(InputDirectoryItem(Search, title='Search Radio', prompt='Search for Radio Programmes', thumb=R(ICON_SEARCH)), search_url = BBC_SEARCH_RADIO_URL))
+  dir.Append(Function(InputDirectoryItem(Search, title="Search TV", prompt="Search for TV Programmes", thumb=R(ICON_SEARCH)), search_url = BBC_SEARCH_TV_URL))
+  dir.Append(Function(InputDirectoryItem(Search, title="Search Radio", prompt="Search for Radio Programmes", thumb=R(ICON_SEARCH)), search_url = BBC_SEARCH_RADIO_URL))
+
+  dir.Append(PrefsItem(title="Preferences", thumb=R(ICON_PREFS)))
 
   return dir
 
@@ -107,7 +109,7 @@ def AddRadioStations(sender, query = None):
 
 ####################################################################################################
 
-def AddCategories(sender, query = None, channel_name = None, channel_id = None, thumb = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL):
+def AddCategories(sender, query = None, channel_name = None, channel_id = None, thumb = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_THUMB_URL):
 
   # returns a list of the various categories / genres displayed on the iPlayer web site
 
@@ -127,7 +129,7 @@ def AddCategories(sender, query = None, channel_name = None, channel_id = None, 
 
 ####################################################################################################
 
-def AddFormats(sender, query = None, channel_name = None, channel_id = None, thumb = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL):
+def AddFormats(sender, query = None, channel_name = None, channel_id = None, thumb = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL % Prefs['sd_video_quality']):
 
   # returns a list of the various programme formats displayed on the iPlayer web site
 
@@ -262,7 +264,7 @@ def MonthName(inDate):
 
 ####################################################################################################
 
-def ChannelContainer(sender, query = None, type = "None", rss_channel_id = None, json_channel_id = None, json_region_id = None, live_id = None, thumb_id = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL):
+def ChannelContainer(sender, query = None, type = "None", rss_channel_id = None, json_channel_id = None, json_region_id = None, live_id = None, thumb_id = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL % Prefs['sd_video_quality']):
 
   dir = MediaContainer(title1 = sender.title2, title2 = sender.itemTitle, viewGroup = "Info")
 
@@ -279,7 +281,7 @@ def ChannelContainer(sender, query = None, type = "None", rss_channel_id = None,
 
   if live_id != None:
     if type == "tv":
-      dir.Append(WebVideoItem(url = BBC_LIVE_TV_URL % live_id, title = "On Now", subtitle = sender.itemTitle, thumb = thumb, duration = 0))
+      dir.Append(WebVideoItem(url = BBC_LIVE_TV_URL % (live_id, Prefs['sd_video_quality']), title = "On Now", subtitle = sender.itemTitle, thumb = thumb, duration = 0))
     else:
       dir.Append(WebVideoItem(url = BBC_LIVE_RADIO_URL % live_id, title = "On Now", subtitle = sender.itemTitle, thumb = thumb, duration = 0))
 
@@ -306,7 +308,7 @@ def ChannelContainer(sender, query = None, type = "None", rss_channel_id = None,
 
 ####################################################################################################
 
-def CategoryContainer(sender, query = None, channel_id = None, category_id = None, thumb = None, has_subcategories = 1, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL):
+def CategoryContainer(sender, query = None, channel_id = None, category_id = None, thumb = None, has_subcategories = 1, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL % Prefs['sd_video_quality']):
 
   dir = MediaContainer(title1 = sender.title2, title2 = sender.itemTitle, viewGroup = "Info")
 
@@ -337,7 +339,7 @@ def CategoryContainer(sender, query = None, channel_id = None, category_id = Non
 
 ####################################################################################################
 
-def SubCategoryContainer(sender, query = None, channel_id = None, category_id = None, thumb = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL):
+def SubCategoryContainer(sender, query = None, channel_id = None, category_id = None, thumb = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL % Prefs['sd_video_quality']):
 
   dir = MediaContainer(title1 = sender.title2, title2 = sender.itemTitle, viewGroup = "Info")
 
@@ -451,13 +453,13 @@ def SubCategoryContainer(sender, query = None, channel_id = None, category_id = 
 
 ####################################################################################################
 
-def SubCategoryItem(category_name = None, category_id = None, sub_category_name = None, sub_category_id = None, thumb = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL):
+def SubCategoryItem(category_name = None, category_id = None, sub_category_name = None, sub_category_id = None, thumb = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL % Prefs['sd_video_quality']):
 
   return Function(DirectoryItem(RSSListContainer, title = sub_category_name, subtitle = category_name, thumb = thumb), url = BBC_FEED_URL + "/iplayer/categories/" + category_id + "/" + sub_category_id + "/list", sort_list = "alpha", thumb_url = thumb_url)
 
 ####################################################################################################
 
-def FormatContainer(sender, query = None, channel_id = None, format_id = None, thumb = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL):
+def FormatContainer(sender, query = None, channel_id = None, format_id = None, thumb = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL % Prefs['sd_video_quality']):
 
   dir = MediaContainer(title1 = sender.title2, title2 = sender.itemTitle, viewGroup = "Info")
 
@@ -479,7 +481,7 @@ def FormatContainer(sender, query = None, channel_id = None, format_id = None, t
 
 ####################################################################################################
 
-def RSSListContainer(sender, query = None, url = None, subtitle = None, sort_list = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL):
+def RSSListContainer(sender, query = None, url = None, subtitle = None, sort_list = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL % Prefs['sd_video_quality']):
 
   # this function generates the highlights, most popular and sub-category lists from an RSS feed
   
@@ -516,7 +518,7 @@ def RSSListContainer(sender, query = None, url = None, subtitle = None, sort_lis
     content = HTML.ElementFromString(entry["content"][0].value)
     summary = content.xpath("p")[1].text.strip()
 
-    dir.Append(WebVideoItem(url = entry["link"], title = title, subtitle = thisSubtitle, summary = summary, duration = 0, thumb = thumb))
+    dir.Append(WebVideoItem(url = entry["link"] + "#" + Prefs['sd_video_quality'], title = title, subtitle = thisSubtitle, summary = summary, duration = 0, thumb = thumb))
     
   if sort_list == "alpha":
     dir.Sort("title")
@@ -528,7 +530,7 @@ def RSSListContainer(sender, query = None, url = None, subtitle = None, sort_lis
 
 ####################################################################################################
 
-def JSONEpisodeListContainer(sender, query = None, url = None, owning_channel = None, empty_title = None, empty_name = None, list_type = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL):
+def JSONEpisodeListContainer(sender, query = None, url = None, owning_channel = None, empty_title = None, empty_name = None, list_type = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL % Prefs['sd_video_quality']):
 
   # this function generates the category lists and format lists from a JSON feed
 
@@ -596,7 +598,7 @@ def JSONEpisodeListContainer(sender, query = None, url = None, owning_channel = 
 
 ####################################################################################################
 
-def JSONScheduleListContainer(sender, query = None, url = None, subtitle = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL):
+def JSONScheduleListContainer(sender, query = None, url = None, subtitle = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL % Prefs['sd_video_quality']):
 
   # this function generates the schedule lists for today / yesterday etc. from a JSON feed
 

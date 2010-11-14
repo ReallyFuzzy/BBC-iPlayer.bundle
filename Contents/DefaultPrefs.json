@@ -1,0 +1,9 @@
+[ 
+  {
+    "id": "sd_video_quality",
+    "label": "Quality for SD videos and live streams",
+    "type": "enum",
+    "values": ["High", "Standard"],
+    "default": "High"
+  }
+]
