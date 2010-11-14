@@ -57,6 +57,7 @@
 				</and>
 			</condition>
 			<action>
+				<pause time="1000" />
 				<!-- find the embedded media player instance, and store it in a handy reference variable -->
 				<!-- for on-demand video and radio, it will be called emp -->
 				<run script="plexEMP = embeddedMedia.playerInstances['emp'];" />

@@ -109,7 +109,7 @@ def AddRadioStations(sender, query = None):
 
 ####################################################################################################
 
-def AddCategories(sender, query = None, channel_name = None, channel_id = None, thumb = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL):
+def AddCategories(sender, query = None, channel_name = None, channel_id = None, thumb = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL % Prefs['sd_video_quality']):
 
   # returns a list of the various categories / genres displayed on the iPlayer web site
 
@@ -530,7 +530,7 @@ def RSSListContainer(sender, query = None, url = None, subtitle = None, sort_lis
 
 ####################################################################################################
 
-def JSONEpisodeListContainer(sender, query = None, url = None, owning_channel = None, empty_title = None, empty_name = None, list_type = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL % Prefs['sd_video_quality']):
+def JSONEpisodeListContainer(sender, query = None, url = None, owning_channel = None, empty_title = None, empty_name = None, list_type = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL % "gdvrrr"):
 
   # this function generates the category lists and format lists from a JSON feed
 
@@ -573,7 +573,7 @@ def JSONEpisodeListContainer(sender, query = None, url = None, owning_channel = 
               thisOwningChannel = thisService["title"]
 
     # check we now have an owning channel, and substitute the channel type if not
-    
+
     if thisOwningChannel == None:
       if empty_name == "TV":
         thisOwningChannel = "TV"
