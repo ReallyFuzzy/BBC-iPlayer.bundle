@@ -530,7 +530,7 @@ def RSSListContainer(sender, query = None, url = None, subtitle = None, sort_lis
 
 ####################################################################################################
 
-def JSONEpisodeListContainer(sender, query = None, url = None, owning_channel = None, empty_title = None, empty_name = None, list_type = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL % "gdvrrr"):
+def JSONEpisodeListContainer(sender, query = None, url = None, owning_channel = None, empty_title = None, empty_name = None, list_type = None, thumb_url = BBC_SD_THUMB_URL, player_url = BBC_SD_PLAYER_URL % Prefs['sd_video_quality']):
 
   # this function generates the category lists and format lists from a JSON feed
 
