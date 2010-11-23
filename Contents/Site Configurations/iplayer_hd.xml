@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site site="http://.*\.bbc\.co\.uk/iplayer/episode/[^/]*/hd"
-	plugin=".*player.swf"
-	initialState="buffering"
-	version="5.0">
+	agent="Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12"
+	windowWidth="1600"
+	windowHeight="1200"
+	plugin=".*player.swf.*#plexapp"
+	initialState="loading"
+	version="6.0">
 
-	<setCookie domain=".bbc.co.uk" path="/" name="BBCPGstat" secure="false" value="0%3A-"/>
+	<setCookie domain=".bbc.co.uk" path="/" name="BBCPGstat" secure="false" value="0%3A-" />
 
 	<crop x="0" y="0" width="0" height="-35" />
 
@@ -18,45 +21,35 @@
 		<end condition="hasCompleted == true" />
 	</seekbar>
 
-	<state name="buffering">
-		<event>
-			<condition>
-				<frameLoaded />
-			</condition>
-			<action>
-				<run script="var plexEMP = null; var position = 0.0; var duration = 0.0; var hasCompleted = false;" />
-				<goto state="loading" />
-			</action>
-		</event>
-	</state>
-
 	<state name="loading">
 		<event>
 			<condition>
-				<and>
-					<color x="17" y="-21" rgb="ffffff" />
-					<color x="398" y="207" rgb="ffffff" />
-					<color x="407" y="207" rgb="ffffff" />
-					<color x="398" y="217" rgb="ffffff" />
-					<color x="407" y="217" rgb="ffffff" />
-					<color x="432" y="223" rgb="ffffff" />
-				</and>
+				<!-- start processing as soon as the videoplayer loads the config file -->
+				<url matches="iplayer/config/emp" />
 			</condition>
 			<action>
-				<pause time="1000" />
+				<run script="var plexEMP = null; var position = 0.0; var duration = 0.0; var hasCompleted = false;" />
+				<!-- customize the player settings -->
+				<run script="var el = document.getElementById('bbc_emp_embed_emp'); var flashvars = el.getAttribute('flashvars'); var src = el.getAttribute('src');" />
+				<run script="el.setAttribute('flashvars', flashvars+'&amp;config_settings_autoPlay=true&amp;guidance=passed'); el.setAttribute('src', src+'#plexapp'); el.setAttribute('wmode', 'opaque'); el.setAttribute('width', '1280'); el.setAttribute('height', '755');" />
+				<!-- 'hack' for webkit based browsers to redraw the player element (so it will load with our customizations) -->
+				<run script="el.style.display = 'none'; el.offsetHeight; el.style.display = 'block';" />
+				<run script="emp_el = document.getElementById('emp'); emp_el.style.overflow = 'visible'; emp_el.style.position = 'absolute'; emp_el.style.zIndex = 9999;" />
+				<!-- don't rush or we'll run into problems with undefined vars -->
+				<pause time="3000" />
+
 				<!-- find the embedded media player instance, and store it in a handy reference variable -->
-				<!-- for on-demand video, it will be called emp -->
+				<!-- for on-demand video and radio, it will be called emp -->
 				<run script="plexEMP = embeddedMedia.playerInstances['emp'];" />
 				<!-- register a callback event for when playback progress changes, which will update the global position and duration variables, as used by the seekbar -->
 				<run script="plexEMP.register('onPlaybackProgress'); plexEMP.onPlaybackProgress = function (p) { position = p.progress; duration = p.duration; };" />
 				<!-- register a callback event for playback completion, but watch out for the completion of short idents at the start of programs -->
 				<!-- to avoid these, we only accept this event as meaning "completion of the main feature" if the current duration value is more than 60 seconds -->
 				<run script="plexEMP.register('onMediaCompleted'); plexEMP.onMediaCompleted = function (p) { if (duration > 60.0) { hasCompleted = true; } };" />
-				<!-- tell the media player to start playing -->
-				<run script="plexEMP.call('play');" />
+
 				<goto state="playing" />
 			</action>
-		</event>	
+		</event>
 	</state>
 
 	<state name="playing">
