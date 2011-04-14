@@ -3,7 +3,6 @@ import math, re
 
 ####################################################################################################
 
-IPLAYER_PREFIX                = "/video/iplayer"
 TITLE                         = "BBC iPlayer"
 
 BBC_URL                       = "http://www.bbc.co.uk"
@@ -31,7 +30,7 @@ ICON_PREFS                    = "icon-prefs.png"
 
 def Start():
 
-  Plugin.AddPrefixHandler(IPLAYER_PREFIX, MainMenu, TITLE, ICON_DEFAULT, ART_WALL)
+  Plugin.AddPrefixHandler("/video/iplayer", MainMenu, TITLE, ICON_DEFAULT, ART_WALL)
   Plugin.AddViewGroup("Menu", viewMode = "List", mediaType = "items")
   Plugin.AddViewGroup("Info", viewMode = "InfoList", mediaType = "items")
   MediaContainer.art = R(ART_DEFAULT)
@@ -98,10 +97,10 @@ def AddRadioStations(sender, query = None):
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Radio 3", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_radio_three"), type = "radio", rss_channel_id = "bbc_radio_three", json_channel_id = "radio3", live_id = "bbc_radio_three"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Radio 4 FM", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_radio_four"), type = "radio", rss_channel_id = "bbc_radio_four", json_channel_id = "radio4", json_region_id = "fm", live_id = "bbc_radio_fourfm"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Radio 4 LW", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_radio_four"), type = "radio", rss_channel_id = "bbc_radio_four", json_channel_id = "radio4", json_region_id = "lw", live_id = "bbc_radio_fourlw"))
+  dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Radio 4 Extra", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_radio_four"), type = "radio", rss_channel_id = "bbc_radio_four_extra", thumb_id = "bbc_radio_four", json_channel_id = "radio4extra", live_id = "bbc_radio_four_extra"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Radio 5 live", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_radio_five_live"), type = "radio", rss_channel_id = "bbc_radio_five_live", json_channel_id = "5live", live_id = "bbc_radio_five_live"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Radio 5 live sports extra", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_radio_five_live_sports_extra"), type = "radio", rss_channel_id = "bbc_radio_five_live_sports_extra", json_channel_id = "5livesportsextra", live_id = "bbc_radio_five_live_sports_extra"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC 6 Music", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_6music"), type = "radio", rss_channel_id = "bbc_6music", json_channel_id = "6music", live_id = "bbc_6music"))
-  dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Radio 7", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_7"), type = "radio", rss_channel_id = "bbc_7", json_channel_id = "bbc7", live_id = "bbc_7"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC Asian Network", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_asian_network"), type = "radio", rss_channel_id = "bbc_asian_network", json_channel_id = "asiannetwork", live_id = "bbc_asian_network"))
   dir.Append(Function(DirectoryItem(ChannelContainer, title = "BBC World Service", subtitle = sender.itemTitle, thumb = BBC_RADIO_CHANNEL_THUMB_URL % "bbc_world_service"), type = "radio", rss_channel_id = "bbc_world_service", json_channel_id = "worldservice", live_id = "bbc_world_service"))
 
@@ -174,42 +173,40 @@ def AddAToZ(sender, query = None):
 def Search(sender, query, search_url = BBC_SEARCH_URL, page_num = 1):
 
   dir = None
-  
+
   searchResults = HTTP.Request(search_url % (String.Quote(query),page_num)).content
-  
+
   # Extract out JS object which contains program info.
   match = re.search('episodeRegistry\\.addData\\((.*?)\\);',searchResults, re.IGNORECASE | re.DOTALL)
-  
+
   if match:
-    jsonObj = JSON.ObjectFromString(match.group(1));
+    jsonObj = JSON.ObjectFromString(match.group(1))
     if jsonObj:
-    
+
       eps = jsonObj.values()
-  
+
       # Try to extract out the order of the show out of the html as the JSON object is a dictionary keyed by PID which means 
       # the results order can't be guaranteed by just iterating through it.    
       epOrder = []
       for  match in re.finditer('class="cta-add-to-favourites" href="pid-(.*?)"',searchResults):
         epOrder.append(match.group(1))
- 
+
       eps.sort(key=lambda ep: (ep['id'] in epOrder and (epOrder.index(ep['id']) + 1)) or 1000)
-      
+
       dir = JSONSSearchListContainer(sender,eps)
-      dir.noHistory = True
-    
+
   if not dir or len(dir) == 0:
     return MessageContainer(header = sender.itemTitle, message = "No programmes found.")
   else:
     if page_num > 1:
       dir.Insert(0,Function(DirectoryItem(Search, title='Previous...', thumb=R(ICON_SEARCH)), query = query, search_url = search_url, page_num = page_num - 1))
-  
+
     # See if we need a next button.
     if (re.search('title="Next page"', searchResults)):
       dir.Append(Function(DirectoryItem(Search, title='More...', thumb=R(ICON_SEARCH)), query = query, search_url = search_url, page_num = page_num + 1))
-  
 
-  return dir; 
-  
+  return dir
+
 ####################################################################################################
 
 def WeekdayName(inDate):
