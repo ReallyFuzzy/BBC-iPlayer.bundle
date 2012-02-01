@@ -514,8 +514,13 @@ def RSSListContainer(sender, query = None, url = None, subtitle = None, sort_lis
 
     content = HTML.ElementFromString(entry["content"][0].value)
     summary = content.xpath("p")[1].text.strip()
-
-    dir.Append(WebVideoItem(url = entry["link"] + "#" + Prefs['sd_video_quality'], title = title, subtitle = thisSubtitle, summary = summary, duration = 0, thumb = thumb))
+    
+     # Only append quality setting if non-HD stream otherwise HD site config won't get picked.
+    thisUrl = entry["link"]
+    if (player_url != BBC_HD_PLAYER_URL):
+      thisUrl += "#" + Prefs['sd_video_quality']
+		
+    dir.Append(WebVideoItem(url = thisUrl, title = title, subtitle = thisSubtitle, summary = summary, duration = 0, thumb = thumb))
     
   if sort_list == "alpha":
     dir.Sort("title")
